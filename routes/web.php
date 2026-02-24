@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Account\NotificationController;
 use App\Http\Controllers\Account\ProfileController;
+use App\Http\Controllers\Board\GroupController as BoardGroupController;
+use App\Http\Controllers\Board\TaskController as BoardTaskController;
+use App\Http\Controllers\BoardController;
 use App\Http\Controllers\Client\ClientCompanyController;
 use App\Http\Controllers\Client\ClientUserController;
 use App\Http\Controllers\DashboardController;
@@ -11,6 +14,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MyWork\ActivityController;
 use App\Http\Controllers\MyWork\MyWorkTaskController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectWorkspaceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\LabelController;
 use App\Http\Controllers\Settings\OwnerCompanyController;
@@ -18,7 +22,6 @@ use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\TaskPriorityController;
 use App\Http\Controllers\Task\AttachmentController;
 use App\Http\Controllers\Task\CommentController;
-use App\Http\Controllers\Task\GroupController;
 use App\Http\Controllers\Task\TimeLogController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -39,24 +42,34 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::put('{project}/favorite/toggle', [ProjectController::class, 'favoriteToggle'])->name('favorite.toggle');
         Route::post('{project}/user-access', [ProjectController::class, 'userAccess'])->name('user_access');
 
-        // TASK GROUPS
-        Route::post('{project}/task-groups', [GroupController::class, 'store'])->name('task-groups.store');
-        Route::put('{project}/task-groups/{taskGroup}', [GroupController::class, 'update'])->name('task-groups.update')->scopeBindings();
-        Route::delete('{project}/task-groups/{taskGroup}', [GroupController::class, 'destroy'])->name('task-groups.destroy')->scopeBindings();
-        Route::post('{project}/task-groups/{taskGroupId}/restore', [GroupController::class, 'restore'])->name('task-groups.restore')->scopeBindings();
-        Route::post('{project}/task-groups/reorder', [GroupController::class, 'reorder'])->name('task-groups.reorder');
+        // BOARDS
+        Route::post('{project}/boards', [BoardController::class, 'store'])->name('boards.store');
+        Route::get('{project}/boards/{board}', [BoardController::class, 'show'])->name('boards.show')->scopeBindings();
+        Route::get('{project}/boards/{board}/tasks/{task}/open', [BoardController::class, 'show'])->name('boards.tasks.open')->scopeBindings();
+        Route::put('{project}/boards/{board}', [BoardController::class, 'update'])->name('boards.update')->scopeBindings();
+        Route::delete('{project}/boards/{board}', [BoardController::class, 'destroy'])->name('boards.destroy')->scopeBindings();
 
-        // TASKS
-        Route::get('{project}/tasks', [TaskController::class, 'index'])->name('tasks');
-        Route::post('{project}/tasks', [TaskController::class, 'store'])->name('tasks.store');
+        // TASK GROUPS (scoped to boards)
+        Route::post('{project}/boards/{board}/task-groups', [BoardGroupController::class, 'store'])->name('boards.task-groups.store')->scopeBindings();
+        Route::put('{project}/boards/{board}/task-groups/{taskGroup}', [BoardGroupController::class, 'update'])->name('boards.task-groups.update')->scopeBindings();
+        Route::delete('{project}/boards/{board}/task-groups/{taskGroup}', [BoardGroupController::class, 'destroy'])->name('boards.task-groups.destroy')->scopeBindings();
+        Route::post('{project}/boards/{board}/task-groups/{taskGroupId}/restore', [BoardGroupController::class, 'restore'])->name('boards.task-groups.restore')->scopeBindings();
+        Route::post('{project}/boards/{board}/task-groups/reorder', [BoardGroupController::class, 'reorder'])->name('boards.task-groups.reorder')->scopeBindings();
+
+        // TASKS (board-aware store)
+        Route::post('{project}/boards/{board}/tasks', [BoardTaskController::class, 'store'])->name('boards.tasks.store')->scopeBindings();
+
+        // TASKS (project-scoped, stays for update/delete/complete/reorder/move)
         Route::put('{project}/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update')->scopeBindings();
-        Route::get('{project}/tasks/{task}/open', [TaskController::class, 'index'])->name('tasks.open')->scopeBindings();
         Route::delete('{project}/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy')->scopeBindings();
         Route::post('{project}/tasks/{task}/restore', [TaskController::class, 'restore'])->name('tasks.restore')->scopeBindings();
-
         Route::post('{project}/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete')->scopeBindings();
         Route::post('{project}/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder');
         Route::post('{project}/tasks/move', [TaskController::class, 'move'])->name('tasks.move');
+
+        // Backward compatibility: old /projects/{project}/tasks → redirect to default board
+        Route::get('{project}/tasks', [TaskController::class, 'index'])->name('tasks');
+        Route::get('{project}/tasks/{task}/open', [TaskController::class, 'index'])->name('tasks.open')->scopeBindings();
 
         // ATTACHMENTS
         Route::group(['prefix' => '{project}/tasks/{task}', 'as' => 'tasks.'], function () {
@@ -77,6 +90,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('comment', [CommentController::class, 'index'])->name('comments');
             Route::post('comment', [CommentController::class, 'store'])->name('comments.store');
         })->scopeBindings();
+
+        // PROJECT SHOW (workspace redirect, must be AFTER all other project sub-routes)
+        Route::get('{project}', [ProjectWorkspaceController::class, 'show'])->name('show');
     });
 
     // My Work

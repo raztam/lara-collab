@@ -69,13 +69,18 @@ class ProjectController extends Controller
 
         $project->users()->attach($data['users']);
 
-        $project->taskGroups()->createMany([
-            ['name' => 'Backlog'],
-            ['name' => 'Todo'],
-            ['name' => 'In progress'],
-            ['name' => 'QA'],
-            ['name' => 'Done'],
-            ['name' => 'Deployed'],
+        $board = $project->boards()->create([
+            'name' => 'Main Board',
+            'is_default' => true,
+        ]);
+
+        $board->taskGroups()->createMany([
+            ['name' => 'Backlog', 'project_id' => $project->id],
+            ['name' => 'Todo', 'project_id' => $project->id],
+            ['name' => 'In progress', 'project_id' => $project->id],
+            ['name' => 'QA', 'project_id' => $project->id],
+            ['name' => 'Done', 'project_id' => $project->id],
+            ['name' => 'Deployed', 'project_id' => $project->id],
         ]);
 
         return redirect()->route('projects.index')->success('Project created', 'A new project was successfully created.');

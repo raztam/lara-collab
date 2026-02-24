@@ -54,7 +54,7 @@ export function CreateTaskDrawer() {
 
   const [form, submit, updateValue] = useForm(
     'post',
-    route('projects.tasks.store', [route().params.project]),
+    route('projects.boards.tasks.store', [route().params.project, route().params.board]),
     {
       ...initial,
     }
@@ -250,7 +250,6 @@ export function CreateTaskDrawer() {
             onChange={value => updateValue('priority_id', value || null)}
             mt='md'
           />
-
 
           <Select
             label='Pricing type'

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan make:model:*)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(php artisan ziggy:generate:*)",
+      "Bash(./vendor/bin/pint:*)",
+      "Bash(npm run format:*)",
+      "Bash(./vendor/bin/pest:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker ps:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
+}
