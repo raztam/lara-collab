@@ -19,7 +19,7 @@ class TaskGroup extends Model implements AuditableContract, Sortable
 
     public $timestamps = false;
 
-    protected $fillable = ['name', 'color', 'project_id', 'order_column'];
+    protected $fillable = ['name', 'color', 'project_id', 'board_id', 'order_column'];
 
     protected static function booted(): void
     {
@@ -31,6 +31,11 @@ class TaskGroup extends Model implements AuditableContract, Sortable
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function board(): BelongsTo
+    {
+        return $this->belongsTo(Board::class);
     }
 
     public function tasks(): HasMany

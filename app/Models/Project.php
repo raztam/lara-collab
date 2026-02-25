@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Lacodix\LaravelModelFilter\Traits\IsSearchable;
 use Lacodix\LaravelModelFilter\Traits\IsSortable;
@@ -48,6 +49,16 @@ class Project extends Model implements AuditableContract
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_user_access');
+    }
+
+    public function boards(): HasMany
+    {
+        return $this->hasMany(Board::class);
+    }
+
+    public function defaultBoard(): HasOne
+    {
+        return $this->hasOne(Board::class)->where('is_default', true);
     }
 
     public function taskGroups(): HasMany

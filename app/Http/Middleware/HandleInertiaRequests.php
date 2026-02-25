@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Project;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -59,6 +60,20 @@ class HandleInertiaRequests extends Middleware
             ],
             'shared' => [
                 'roles' => fn () => Role::orderBy('name')->get(['id', 'name'])->toArray(),
+                'projects' => function () {
+                    if (! auth()->check()) {
+                        return [];
+                    }
+
+                    return Project::query()
+                        ->when(auth()->user()->isNotAdmin(), fn ($q) => $q
+                            ->whereHas('users', fn ($q) => $q->where('id', auth()->id()))
+                            ->orWhereHas('clientCompany.clients', fn ($q) => $q->where('users.id', auth()->id()))
+                        )
+                        ->orderBy('name')
+                        ->get(['id', 'name'])
+                        ->toArray();
+                },
             ],
             'flash' => session()->get('flash'),
             'version' => config('app.version'),

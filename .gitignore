@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 /storage/clockwork
 .pnpm-lock.yaml
+CLAUDE.md
+.claude/

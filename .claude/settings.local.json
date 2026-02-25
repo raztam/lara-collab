@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan make:model:*)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(php artisan ziggy:generate:*)",
+      "Bash(./vendor/bin/pint:*)",
+      "Bash(npm run format:*)",
+      "Bash(./vendor/bin/pest:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker ps:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(git checkout:*)",
+      "Bash(php artisan make:request:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(php artisan test:*)",
+      "Bash(php artisan make:test:*)",
+      "Bash(php -l:*)",
+      "Bash(mysql:*)",
+      "Bash(DB_HOST=172.23.0.3 php artisan test:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(./vendor/bin/sail artisan migrate:*)",
+      "Bash(./vendor/bin/sail artisan:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
+}

@@ -15,9 +15,9 @@ beforeEach(function () {
     // Seed necessary data
     $this->seed(\Database\Seeders\CountrySeeder::class);
     $this->seed(\Database\Seeders\CurrencySeeder::class);
-    $this->seed(\Database\Seeders\TaskPrioritySeeder::class);
     $this->seed(\Database\Seeders\RoleSeeder::class);
     $this->seed(\Database\Seeders\PermissionSeeder::class);
+    $this->seed(\Database\Seeders\TaskPrioritySeeder::class);
 
     // Create a user with necessary permissions
     $this->user = User::factory()->create();
@@ -36,8 +36,14 @@ beforeEach(function () {
         'default_pricing_type' => 'hourly',
     ]);
 
+    $this->board = $this->project->boards()->create([
+        'name' => 'Main Board',
+        'is_default' => true,
+    ]);
+
     $this->taskGroup = TaskGroup::create([
         'project_id' => $this->project->id,
+        'board_id' => $this->board->id,
         'name' => 'To Do',
         'color' => 'blue',
     ]);
@@ -230,7 +236,7 @@ it('saves priority_id correctly for future relationship loading', function () {
 it('can create a task via HTTP request with priority', function () {
     $priority = TaskPriority::where('label', 'High')->first();
 
-    $response = $this->post(route('projects.tasks.store', $this->project), [
+    $response = $this->post(route('projects.boards.tasks.store', [$this->project, $this->board]), [
         'name' => 'New Task with Priority',
         'group_id' => $this->taskGroup->id,
         'assigned_to_user_id' => null,
@@ -257,7 +263,7 @@ it('can create a task via HTTP request with priority', function () {
 });
 
 it('can create a task via HTTP request without priority', function () {
-    $response = $this->post(route('projects.tasks.store', $this->project), [
+    $response = $this->post(route('projects.boards.tasks.store', [$this->project, $this->board]), [
         'name' => 'New Task without Priority',
         'group_id' => $this->taskGroup->id,
         'assigned_to_user_id' => null,
@@ -309,7 +315,7 @@ it('can update a task priority via HTTP request', function () {
 });
 
 it('validates that priority_id exists in task_priorities table', function () {
-    $response = $this->post(route('projects.tasks.store', $this->project), [
+    $response = $this->post(route('projects.boards.tasks.store', [$this->project, $this->board]), [
         'name' => 'Task with invalid priority',
         'group_id' => $this->taskGroup->id,
         'description' => 'Task description',
