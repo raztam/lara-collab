@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DropdownValuesController;
 use App\Http\Controllers\Invoice\InvoiceTasksController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\Monday\MondayIntegrationController;
 use App\Http\Controllers\MyWork\ActivityController;
 use App\Http\Controllers\MyWork\MyWorkTaskController;
 use App\Http\Controllers\ProjectController;
@@ -48,6 +49,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('{project}/boards/{board}/tasks/{task}/open', [BoardController::class, 'show'])->name('boards.tasks.open')->scopeBindings();
         Route::put('{project}/boards/{board}', [BoardController::class, 'update'])->name('boards.update')->scopeBindings();
         Route::delete('{project}/boards/{board}', [BoardController::class, 'destroy'])->name('boards.destroy')->scopeBindings();
+
+        // MONDAY INTEGRATIONS
+        Route::get('{project}/boards/{board}/integrations/monday', [MondayIntegrationController::class, 'show'])
+            ->name('boards.integrations.monday.show')->scopeBindings();
+        Route::post('{project}/boards/{board}/integrations/monday', [MondayIntegrationController::class, 'store'])
+            ->name('boards.integrations.monday.store')->scopeBindings();
+        Route::delete('{project}/boards/{board}/integrations/monday', [MondayIntegrationController::class, 'destroy'])
+            ->name('boards.integrations.monday.destroy')->scopeBindings();
 
         // TASK GROUPS (scoped to boards)
         Route::post('{project}/boards/{board}/task-groups', [BoardGroupController::class, 'store'])->name('boards.task-groups.store')->scopeBindings();

@@ -1,7 +1,13 @@
 import UpdateBoardModal from './UpdateBoardModal';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { ActionIcon, Badge, Card, Group, Text, Tooltip } from '@mantine/core';
-import { IconChevronRight, IconLayoutKanban, IconListCheck, IconPencil } from '@tabler/icons-react';
+import {
+  IconChevronRight,
+  IconLayoutKanban,
+  IconListCheck,
+  IconPencil,
+  IconPlugConnected,
+} from '@tabler/icons-react';
 import { useState } from 'react';
 import classes from './css/BoardCard.module.css';
 
@@ -106,28 +112,54 @@ export default function BoardCard({ board, project }) {
     </Link>
 
     {can('edit task group') && (
-      <Tooltip
-        label='Rename board'
-        withArrow
-      >
-        <ActionIcon
-          variant='subtle'
-          size='sm'
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            opacity: hovered ? 1 : 0,
-            transition: 'opacity 150ms ease',
-          }}
-          onClick={e => {
-            e.preventDefault();
-            UpdateBoardModal(board);
-          }}
+      <>
+        <Tooltip
+          label='Integrations'
+          withArrow
         >
-          <IconPencil size={13} />
-        </ActionIcon>
-      </Tooltip>
+          <ActionIcon
+            variant='subtle'
+            size='sm'
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 32,
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 150ms ease',
+            }}
+            onClick={e => {
+              e.preventDefault();
+              router.visit(
+                route('projects.boards.integrations.monday.show', [project.id, board.id])
+              );
+            }}
+          >
+            <IconPlugConnected size={13} />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip
+          label='Rename board'
+          withArrow
+        >
+          <ActionIcon
+            variant='subtle'
+            size='sm'
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 150ms ease',
+            }}
+            onClick={e => {
+              e.preventDefault();
+              UpdateBoardModal(board);
+            }}
+          >
+            <IconPencil size={13} />
+          </ActionIcon>
+        </Tooltip>
+      </>
     )}
   </div>
   );
