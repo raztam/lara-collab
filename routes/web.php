@@ -8,6 +8,7 @@ use App\Http\Controllers\BoardController;
 use App\Http\Controllers\Client\ClientCompanyController;
 use App\Http\Controllers\Client\ClientUserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Doc\DocController;
 use App\Http\Controllers\DropdownValuesController;
 use App\Http\Controllers\Invoice\InvoiceTasksController;
 use App\Http\Controllers\InvoiceController;
@@ -99,6 +100,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             Route::get('comment', [CommentController::class, 'index'])->name('comments');
             Route::post('comment', [CommentController::class, 'store'])->name('comments.store');
         })->scopeBindings();
+
+        // DOCS
+        Route::post('{project}/docs', [DocController::class, 'store'])->name('docs.store');
+        Route::get('{project}/docs/{doc}', [DocController::class, 'show'])->name('docs.show')->scopeBindings();
+        Route::put('{project}/docs/{doc}', [DocController::class, 'update'])->name('docs.update')->scopeBindings();
+        Route::delete('{project}/docs/{doc}', [DocController::class, 'destroy'])->name('docs.destroy')->scopeBindings();
 
         // PROJECT SHOW (workspace redirect, must be AFTER all other project sub-routes)
         Route::get('{project}', [ProjectWorkspaceController::class, 'show'])->name('show');

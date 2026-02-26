@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { showNotification } from '@mantine/notifications';
+import useDocsStore from './store/useDocsStore';
 import useNotificationsStore from './store/useNotificationsStore';
 import useTaskGroupsStore from './store/useTaskGroupsStore';
 import useTasksStore from './store/useTasksStore';
@@ -9,6 +10,7 @@ export default function useWebSockets() {
     auth: { user },
   } = usePage().props;
   const { addNotification } = useNotificationsStore();
+  const { addDocLocally, updateDocLocally, removeDocLocally } = useDocsStore();
   const {
     addTaskLocally,
     updateTaskLocally,
@@ -63,7 +65,10 @@ export default function useWebSockets() {
       .listen('TaskGroup\\TaskGroupUpdated', e => updateTaskGroupLocally(e.taskGroup))
       .listen('TaskGroup\\TaskGroupDeleted', e => removeTaskGroupLocally(e.taskGroupId))
       .listen('TaskGroup\\TaskGroupRestored', e => restoreTaskGroupLocally(e.taskGroup))
-      .listen('TaskGroup\\TaskGroupOrderChanged', e => reorderTaskGroupLocally(e.taskGroupIds));
+      .listen('TaskGroup\\TaskGroupOrderChanged', e => reorderTaskGroupLocally(e.taskGroupIds))
+      .listen('Doc\\DocCreated', e => addDocLocally(e.doc))
+      .listen('Doc\\DocUpdated', e => updateDocLocally(e.doc))
+      .listen('Doc\\DocDeleted', e => removeDocLocally(e.docId));
 
     return () => window.Echo.leave(`App.Models.Project.${project.id}`);
   };

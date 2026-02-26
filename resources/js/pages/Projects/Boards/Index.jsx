@@ -1,14 +1,22 @@
 import BackButton from '@/components/BackButton';
+import useDocsStore from '@/hooks/store/useDocsStore';
 import MainLayout from '@/layouts/MainLayout';
-import { usePage } from '@inertiajs/react';
-import { Button, Center, Flex, Grid } from '@mantine/core';
-import { IconPlus, IconLayoutKanban } from '@tabler/icons-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Button, Center, Divider, Flex, Grid, Stack, Text } from '@mantine/core';
+import { IconFile, IconLayoutKanban, IconPlus } from '@tabler/icons-react';
 import EmptyWithIcon from '@/components/EmptyWithIcon';
+import { useEffect } from 'react';
 import BoardCard from './BoardCard';
 import CreateBoardModal from './CreateBoardModal';
+import CreateDocModal from './CreateDocModal';
 
 const BoardsIndex = () => {
-  const { project, boards } = usePage().props;
+  const { project, boards, docs: initialDocs } = usePage().props;
+  const { docs, setDocs } = useDocsStore();
+
+  useEffect(() => {
+    setDocs(initialDocs);
+  }, [initialDocs]);
 
   return (
     <>
@@ -33,6 +41,13 @@ const BoardsIndex = () => {
         </Grid.Col>
       </Grid>
 
+      <Text
+        fw={600}
+        mb='sm'
+      >
+        Boards
+      </Text>
+
       {boards.length ? (
         <Flex
           gap='lg'
@@ -50,13 +65,66 @@ const BoardsIndex = () => {
           ))}
         </Flex>
       ) : (
-        <Center mih={400}>
+        <Center mih={200}>
           <EmptyWithIcon
             title='No boards found'
             subtitle='Create a board to get started'
             icon={IconLayoutKanban}
           />
         </Center>
+      )}
+
+      <Divider my='xl' />
+
+      <Flex
+        justify='space-between'
+        align='center'
+        mb='sm'
+      >
+        <Text fw={600}>Docs</Text>
+        {can('create task group') && (
+          <Button
+            leftSection={<IconPlus size={14} />}
+            radius='xl'
+            variant='subtle'
+            size='sm'
+            onClick={CreateDocModal}
+          >
+            New doc
+          </Button>
+        )}
+      </Flex>
+
+      {docs.length ? (
+        <Stack gap='xs'>
+          {docs.map(doc => (
+            <Link
+              key={doc.id}
+              href={route('projects.docs.show', [project.id, doc.id])}
+              style={{ textDecoration: 'none' }}
+            >
+              <Flex
+                align='center'
+                gap='xs'
+                p='sm'
+                style={{ borderRadius: 8, cursor: 'pointer' }}
+              >
+                <IconFile
+                  size={16}
+                  opacity={0.5}
+                />
+                <Text size='sm'>{doc.title || 'Untitled'}</Text>
+              </Flex>
+            </Link>
+          ))}
+        </Stack>
+      ) : (
+        <Text
+          c='dimmed'
+          size='sm'
+        >
+          No docs yet
+        </Text>
       )}
     </>
   );
