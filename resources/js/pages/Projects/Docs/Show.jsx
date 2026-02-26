@@ -1,8 +1,9 @@
+import BackButton from '@/components/BackButton';
 import RichTextEditor from '@/components/RichTextEditor';
 import useWebSockets from '@/hooks/useWebSockets';
 import MainLayout from '@/layouts/MainLayout';
 import { usePage } from '@inertiajs/react';
-import { Stack, TextInput } from '@mantine/core';
+import { Flex, Stack, TextInput } from '@mantine/core';
 import { useDebouncedValue, useDidUpdate } from '@mantine/hooks';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -35,6 +36,12 @@ const Show = () => {
       maw={860}
       mx='auto'
     >
+      <Flex justify='flex-start'>
+        <BackButton
+          route='projects.show'
+          params={project.id}
+        />
+      </Flex>
       <TextInput
         variant='unstyled'
         placeholder='Untitled'
