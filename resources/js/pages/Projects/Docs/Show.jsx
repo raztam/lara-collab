@@ -32,9 +32,8 @@ const Show = () => {
 
   return (
     <Stack
-      p='xl'
-      maw={860}
-      mx='auto'
+      style={{ height: 'calc(100dvh - 8rem)' }}
+      gap='sm'
     >
       <Flex justify='flex-start'>
         <BackButton
@@ -52,8 +51,8 @@ const Show = () => {
       <RichTextEditor
         content={content}
         onChange={setContent}
-        height={600}
         placeholder='Start writing...'
+        className={classes.editor}
       />
     </Stack>
   );
