@@ -82,11 +82,11 @@ class ReportController extends Controller
             ->{$completed ? 'whereNotNull' : 'whereNull'}('tasks.completed_at')
             ->where('billable', $request->get('billable', 'true') === 'true')
             ->groupBy(['time_logs.user_id', 'date'])
-            ->selectRaw('
+            ->selectRaw("
                 MAX(projects.id) AS project_id, MAX(projects.name) AS project_name,
                 MAX(users.id) AS user_id, MAX(users.name) AS user_name,
-                SUM(time_logs.minutes) / 60 AS total_hours, DATE_FORMAT(time_logs.created_at, "%e. %b %Y") AS date
-            ')
+                SUM(time_logs.minutes) / 60 AS total_hours, TO_CHAR(time_logs.created_at, 'FMDD. Mon YYYY') AS date
+            ")
             ->orderBy('date')
             ->get();
 
