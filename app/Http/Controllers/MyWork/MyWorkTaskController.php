@@ -36,10 +36,10 @@ class MyWorkTaskController extends Controller
                                     ->leftJoin('task_priorities', 'tasks.priority_id', '=', 'task_priorities.id')
                                     ->orderByRaw('tasks.priority_id IS NULL')
                                     ->orderBy('task_priorities.order', $direction)
-                                    ->orderByRaw('-tasks.due_on DESC')
+                                    ->orderByRaw('tasks.due_on DESC NULLS LAST')
                                     ->select('tasks.*');
                             }, function ($query) {
-                                $query->orderByRaw('-due_on DESC');
+                                $query->orderByRaw('due_on DESC NULLS LAST');
                             })
                             ->with([
                                 'labels:id,name,color',
